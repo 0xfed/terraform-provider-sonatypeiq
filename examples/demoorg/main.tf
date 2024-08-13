@@ -21,14 +21,10 @@ data "sonatypeiq_organization" "root" {
   name = "Root Organization"
 }
 
-// resource "sonatypeiq_organization" "sub_org" {
-//  name                   = "Sub Organization"
-//  parent_organization_id = data.sonatypeiq_organization.root.id
-//}
-
 resource "sonatypeiq_organization" "sub_org" {
-  name                   = "Sub Organization"
-  parent_organization_id = data.sonatypeiq_organization.sandbox.id
+ name                   = "Sub Organization"
+ parent_organization_id = data.sonatypeiq_organization.root.id
+#  parent_organization_id = data.sonatypeiq_organization.sandbox.id
 }
 
 
