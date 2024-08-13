@@ -159,6 +159,7 @@ resource "sonatypeiq_application" "app_by_public_id" {
 
 resource "sonatypeiq_source_control" "test" {
   owner_type = "application"
+  scm_provider = "github"
   owner_id = sonatypeiq_application.app_by_public_id.id
   base_branch = "my-cool-branch"
   remediation_pull_requests_enabled = %s
@@ -183,6 +184,7 @@ resource "sonatypeiq_application" "app_by_public_id" {
 resource "sonatypeiq_source_control" "test" {
   owner_type = "application"
   owner_id = sonatypeiq_application.app_by_public_id.id
+  scm_provider = "github"
   repository_url = "https://github.com/sonatype-nexus-community/terraform-provider-sonatypeiq.git"
 }`, rand, rand)
 }
@@ -193,13 +195,16 @@ data "sonatypeiq_organization" "sandbox" {
   name = "Sandbox Organization"
 }
 
+
 resource "sonatypeiq_organization" "my_sandbox" {
   name = "Sandbox Organization %s"
   parent_organization_id = data.sonatypeiq_organization.sandbox.id
 }
 
+
 resource "sonatypeiq_source_control" "test" {
   owner_type = "organization"
+  scm_provider = "github"
   owner_id = sonatypeiq_organization.my_sandbox.id
   remediation_pull_requests_enabled = %s
   pull_request_commenting_enabled = %s
