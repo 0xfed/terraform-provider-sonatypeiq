@@ -32,7 +32,7 @@ organizations = [
 ]
 
 applications = [
-  { "name" : "apibankingno",
+  { "name" : "Web",
     "rbac" : [
       {
         "role" : "Developer",
@@ -40,12 +40,12 @@ applications = [
       },
       {
         "role" : "Owner",
-        "members" : ["test"]
+        "members" : ["apiuser"]
       },
     ],
-    "organization_name" : "Dev",
+
   },
-  { "name" : "apibanking2",
+  { "name" : "Blog",
     "rbac" : [
       {
         "role" : "Developer",
@@ -56,7 +56,7 @@ applications = [
         "members" : ["test"]
       },
     ],
-    "organization_name" : "Test Zone",
+
   },
 ]
 

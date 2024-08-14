@@ -54,23 +54,19 @@ locals {
     ]
   ]))
 
-  orgs = { for org in data.sonatypeiq_organizations.all.organizations:
+  orgs = { for org in data.sonatypeiq_organizations.all.organizations :
     org.name => {
       name = org.name,
-      id = org.id
+      id   = org.id
     }
   }
 
-  apps = { for app in data.sonatypeiq_applications.all.applications:
+  apps = { for app in data.sonatypeiq_applications.all.applications :
     app.name => {
       name = app.name,
-      id = app.id
+      id   = app.id
     }
   }
-
-  listofapplications = tolist(var.applications)
-  listoforgroles = tolist(local.orgsroles)
-  listofapproles = tolist(local.appsroles)
 
 }
 
@@ -111,8 +107,8 @@ resource "sonatypeiq_organization" "ASandbox" {
   parent_organization_id = sonatypeiq_organization.Test.id
 }
 
-resource "sonatypeiq_organization" "Bro" {
-  name                   = "Bro Sanbox"
+resource "sonatypeiq_organization" "TestSB" {
+  name                   = "Test Sanbox"
   parent_organization_id = data.sonatypeiq_organization.root.id
 }
 
@@ -131,38 +127,59 @@ resource "sonatypeiq_user" "users" {
 
 
 
-resource "sonatypeiq_application" "all" {
-  for_each        = { for obj in var.applications : obj.name => obj } // 
-  name            = each.value.name
-  public_id       = replace(chomp(each.value.name), " ", "-")
-  organization_id = local.orgs[each.value.organization_name].id
-  # count = length(local.listofapplications)
-  # name            = local.listofapplications[count.index].name
-  # public_id       = replace(chomp(local.listofapplications[count.index].name), " ", "-")
-  # organization_id = local.orgs[local.listofapplications[count.index].organization_name].id
+resource "sonatypeiq_application" "Blog" {
+  name            = "Blog"
+  public_id       = "blog"
+  organization_id = sonatypeiq_organization.Dev.id
+}
 
-  
+resource "sonatypeiq_application" "Web" {
+  name            = "Web"
+  public_id       = "web"
+  organization_id = sonatypeiq_organization.TestSB.id
 }
 
 
 resource "sonatypeiq_application_role_membership" "all" {
-  # for_each       = { for obj in local.appsroles : "${obj.app}_${obj.role}_${obj.member}" => obj }
-  count = length(local.listofapproles)
-  application_id = local.apps[local.listofapproles[count.index].app].id
-  role_id        = data.sonatypeiq_role.roles[local.listofapproles[count.index].role].id
-  user_name      = local.listofapproles[count.index].member
+  for_each       = { for obj in local.appsroles : "${local.apps[obj.app].id}_${data.sonatypeiq_role.roles[obj.role].id}_${obj.member}" => obj }
+  application_id = local.apps[each.value.app].id
+  role_id        = data.sonatypeiq_role.roles[each.value.role].id
+  user_name      = each.value.member
 }
 
 
 resource "sonatypeiq_organization_role_membership" "all" {
-  # for_each        = { for obj in local.orgsroles : "${obj.org}_${obj.role}_${obj.member}" => obj }
-  count = length(local.listoforgroles)
-  organization_id = local.orgs[local.listoforgroles[count.index].org].id
-  role_id         = data.sonatypeiq_role.roles[local.listoforgroles[count.index].role].id
-  user_name       = local.listoforgroles[count.index].member
+  for_each        = { for obj in local.orgsroles : "${local.orgs[obj.org].id}_${data.sonatypeiq_role.roles[obj.role].id}_${obj.member}" => obj }
+  organization_id = local.orgs[each.value.org].id
+  role_id         = data.sonatypeiq_role.roles[each.value.role].id
+  user_name       = each.value.member
 }
 
 
+resource "sonatypeiq_source_control" "app_web" {
+  owner_type                        = "application"
+  owner_id                          = sonatypeiq_application.Web.id
+  base_branch                       = "main"
+  remediation_pull_requests_enabled = true
+  pull_request_commenting_enabled   = true
+  source_control_evaluation_enabled = false
+  scm_provider                      = "github"
+  repository_url                    = "https://github.com/sonatype-nexus-community/terraform-provider-sonatypeiq.git"
+}
+
+resource "sonatypeiq_source_control" "org_Dev" {
+  owner_type                        = "organization"
+  owner_id                          = sonatypeiq_organization.Dev.id
+  remediation_pull_requests_enabled = true
+  pull_request_commenting_enabled   = true
+  source_control_evaluation_enabled = true
+  scm_provider                      = "github"
+  base_branch                       = "my-cool-branch"
+}
+
 output "local_org" {
   value = local.orgs
+}
+output "local_app" {
+  value = local.apps
 }
