@@ -245,7 +245,56 @@ func (r *organizationResource) Read(ctx context.Context, req resource.ReadReques
 
 // Update updates the resource and sets the updated Terraform state on success.
 func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// No Update API
+	// Retrieve values from plan and state
+	var plan organizationModelResouce
+	var state organizationModelResouce
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Make Update API Call
+	ctx = context.WithValue(
+		ctx,
+		sonatypeiq.ContextBasicAuth,
+		r.auth,
+	)
+
+	if !plan.ParentOrganiziationId.Equal(state.ParentOrganiziationId) {
+		apiResponse, err := r.client.OrganizationsAPI.MoveOrganization(ctx, state.ID.ValueString(), plan.ParentOrganiziationId.ValueString()).Execute()
+		if err != nil {
+			errorBody, _ := io.ReadAll(apiResponse.Body)
+			resp.Diagnostics.AddError(
+				"Error moving organization", "Could not move the organization("+state.ID.ValueString()+") to new parent organization("+plan.ParentOrganiziationId.String()+"): "+apiResponse.Status+": "+string(errorBody),
+			)
+			return
+		}
+	}
+	organization, api_response, err := r.client.OrganizationsAPI.GetOrganization(ctx, state.ID.ValueString()).Execute()
+
+	// Call API
+	if err != nil {
+		error_body, _ := io.ReadAll(api_response.Body)
+		resp.Diagnostics.AddError(
+			"Error updating Organization",
+			"Could not update Organization, unexpected error: "+api_response.Status+": "+string(error_body),
+		)
+		return
+	}
+
+	// Map response body to schema and populate Computed attribute values
+	plan.ID = types.StringValue(*organization.Id)
+	plan.Name = types.StringValue(*organization.Name)
+	plan.ParentOrganiziationId = types.StringValue(*organization.ParentOrganizationId)
+	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
+
+	// Finally, set the state
+	// tflog.Debug(ctx, "Storing updated organization info into the state")
+	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
