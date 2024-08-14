@@ -1,15 +1,34 @@
 organizations = [
   {
-    "name" : "Test",
-    "parent_organization_name" : "Root Organization",
-    
+    "name" : "Test Zone",
+    "rbac" : [],
+    "sourcecontrol" : {
+      "provider" : "github",
+      "repository" : "",
+    },
   },
   {
-    "name" : "Sandbox",
-    "parent_organization_name" : "Test",
-   
+    "name" : "Dev",
+    "rbac" : [
+      {
+        "role" : "Owner",
+        "members" : ["test"]
+      },
+    ],
   },
-
+  {
+    "name" : "Another Sanbox",
+    "rbac" : [
+      {
+        "role" : "Developer",
+        "members" : ["test"]
+      },
+      {
+        "role" : "Owner",
+        "members" : ["apiuser"]
+      },
+    ],
+  },
 ]
 
 applications = [
@@ -24,7 +43,7 @@ applications = [
         "members" : ["test"]
       },
     ],
-    "organization_name" : "Test",
+    "organization_name" : "Dev",
   },
   { "name" : "apibanking2",
     "rbac" : [
@@ -37,7 +56,7 @@ applications = [
         "members" : ["test"]
       },
     ],
-    "organization_name" : "Test",
+    "organization_name" : "Test Zone",
   },
 ]
 
@@ -53,3 +72,7 @@ users = [
     "email" : "test",
   }
 ]
+
+nexusiq_url      = "http://localhost:8070"
+nexusiq_username = "admin"
+nexusiq_password = "admin123"
