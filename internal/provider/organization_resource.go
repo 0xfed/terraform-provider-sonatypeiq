@@ -30,7 +30,7 @@ import (
 	sonatypeiq "github.com/sonatype-nexus-community/nexus-iq-api-client-go"
 )
 
-type organizationModelResouce struct {
+type organizationModelResource struct {
 	ID                    types.String `tfsdk:"id"`
 	Name                  types.String `tfsdk:"name"`
 	ParentOrganiziationId types.String `tfsdk:"parent_organization_id"`
@@ -112,7 +112,7 @@ func (r *organizationResource) Schema(_ context.Context, _ resource.SchemaReques
 // Create creates the resource and sets the initial Terraform state.
 func (r *organizationResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
-	var plan organizationModelResouce
+	var plan organizationModelResource
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -186,7 +186,7 @@ func (r *organizationResource) Create(ctx context.Context, req resource.CreateRe
 
 // Read refreshes the Terraform state with the latest data.
 func (r *organizationResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state organizationModelResouce
+	var state organizationModelResource
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
@@ -246,8 +246,8 @@ func (r *organizationResource) Read(ctx context.Context, req resource.ReadReques
 // Update updates the resource and sets the updated Terraform state on success.
 func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Retrieve values from plan and state
-	var plan organizationModelResouce
-	var state organizationModelResouce
+	var plan organizationModelResource
+	var state organizationModelResource
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
@@ -299,7 +299,7 @@ func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRe
 
 // Delete deletes the resource and removes the Terraform state on success.
 func (r *organizationResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state organizationModelResouce
+	var state organizationModelResource
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
