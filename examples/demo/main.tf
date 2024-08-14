@@ -60,9 +60,26 @@ locals {
       id = org.id
     }
   }
+
+  apps = { for app in data.sonatypeiq_applications.all.applications:
+    app.name => {
+      name = app.name,
+      id = app.id
+    }
+  }
+
+  listofapplications = tolist(var.applications)
+  listoforgroles = tolist(local.orgsroles)
+  listofapproles = tolist(local.appsroles)
+
 }
 
 data "sonatypeiq_organizations" "all" {
+  # should be the one with deepest hierarchy
+  depends_on = [sonatypeiq_organization.Dev]
+}
+
+data "sonatypeiq_applications" "all" {
   # should be the one with deepest hierarchy
   depends_on = [sonatypeiq_organization.Dev]
 }
@@ -94,6 +111,11 @@ resource "sonatypeiq_organization" "ASandbox" {
   parent_organization_id = sonatypeiq_organization.Test.id
 }
 
+resource "sonatypeiq_organization" "Bro" {
+  name                   = "Bro Sanbox"
+  parent_organization_id = data.sonatypeiq_organization.root.id
+}
+
 
 # Create and manage Users for Sonatype IQ Server
 resource "sonatypeiq_user" "users" {
@@ -114,22 +136,30 @@ resource "sonatypeiq_application" "all" {
   name            = each.value.name
   public_id       = replace(chomp(each.value.name), " ", "-")
   organization_id = local.orgs[each.value.organization_name].id
+  # count = length(local.listofapplications)
+  # name            = local.listofapplications[count.index].name
+  # public_id       = replace(chomp(local.listofapplications[count.index].name), " ", "-")
+  # organization_id = local.orgs[local.listofapplications[count.index].organization_name].id
+
+  
 }
 
 
 resource "sonatypeiq_application_role_membership" "all" {
-  for_each       = { for obj in local.appsroles : "${obj.app}_${obj.role}_${obj.member}" => obj }
-  application_id = sonatypeiq_application.all[each.value.app].id
-  role_id        = data.sonatypeiq_role.roles[each.value.role].id
-  user_name      = each.value.member
+  # for_each       = { for obj in local.appsroles : "${obj.app}_${obj.role}_${obj.member}" => obj }
+  count = length(local.listofapproles)
+  application_id = local.apps[local.listofapproles[count.index].app].id
+  role_id        = data.sonatypeiq_role.roles[local.listofapproles[count.index].role].id
+  user_name      = local.listofapproles[count.index].member
 }
 
 
 resource "sonatypeiq_organization_role_membership" "all" {
-  for_each        = { for obj in local.orgsroles : "${obj.org}_${obj.role}_${obj.member}" => obj }
-  organization_id = local.orgs[each.value.org].id
-  role_id         = data.sonatypeiq_role.roles[each.value.role].id
-  user_name       = each.value.member
+  # for_each        = { for obj in local.orgsroles : "${obj.org}_${obj.role}_${obj.member}" => obj }
+  count = length(local.listoforgroles)
+  organization_id = local.orgs[local.listoforgroles[count.index].org].id
+  role_id         = data.sonatypeiq_role.roles[local.listoforgroles[count.index].role].id
+  user_name       = local.listoforgroles[count.index].member
 }
 
 

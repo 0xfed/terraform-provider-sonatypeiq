@@ -32,7 +32,7 @@ organizations = [
 ]
 
 applications = [
-  { "name" : "apibanking",
+  { "name" : "apibankingno",
     "rbac" : [
       {
         "role" : "Developer",
