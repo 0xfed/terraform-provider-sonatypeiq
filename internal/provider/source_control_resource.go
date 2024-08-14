@@ -19,15 +19,18 @@ package provider
 import (
 	"context"
 	"fmt"
+	"io"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"io"
-	"strings"
 
 	sonatypeiq "github.com/sonatype-nexus-community/nexus-iq-api-client-go"
 )
@@ -68,6 +71,9 @@ func (r *sourceControlResource) Schema(_ context.Context, _ resource.SchemaReque
 			"owner_id": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: "Must be a valid organization or application ID, for the root organization use `ROOT_ORGANIZATION_ID`",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"owner_type": schema.StringAttribute{
 				Required:            true,

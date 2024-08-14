@@ -168,14 +168,16 @@ resource "sonatypeiq_source_control" "app_web" {
 }
 
 resource "sonatypeiq_source_control" "org_Dev" {
+  # uncomment or complemet
   owner_type                        = "organization"
-  owner_id                          = sonatypeiq_organization.Dev.id
+  owner_id                          = sonatypeiq_organization.TestSB.id
   remediation_pull_requests_enabled = true
   pull_request_commenting_enabled   = true
   source_control_evaluation_enabled = true
   scm_provider                      = "github"
   base_branch                       = "my-cool-branch"
 }
+
 
 output "local_org" {
   value = local.orgs
