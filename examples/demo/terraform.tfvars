@@ -73,6 +73,6 @@ users = [
   }
 ]
 
-nexusiq_url      = "http://localhost:8070"
+nexusiq_url      = "http://127.1:8070"
 nexusiq_username = "admin"
 nexusiq_password = "admin123"

@@ -27,7 +27,7 @@ resource "sonatypeiq_source_control" "application" {
   remediation_pull_requests_enabled = true
   pull_request_commenting_enabled   = true
   source_control_evaluation_enabled = false
-  repository_url                    = "https://github.com/sonatype-nexus-community/terraform-provider-sonatypeiq.git"
+  repository_url                    = "https://github.com/0xfed/terraform-provider-sonatypeiq.git"
 }
 
 # Set source control for an organization

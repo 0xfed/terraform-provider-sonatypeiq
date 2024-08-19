@@ -141,7 +141,7 @@ resource "sonatypeiq_application" "Web" {
 
 
 resource "sonatypeiq_application_role_membership" "all" {
-  for_each       = { for obj in local.appsroles : "${local.apps[obj.app].id}_${data.sonatypeiq_role.roles[obj.role].id}_${obj.member}" => obj }
+  for_each       = { for obj in local.appsroles : "${obj.app}_${data.sonatypeiq_role.roles[obj.role].id}_${obj.member}" => obj }
   application_id = local.apps[each.value.app].id
   role_id        = data.sonatypeiq_role.roles[each.value.role].id
   user_name      = each.value.member
@@ -149,7 +149,7 @@ resource "sonatypeiq_application_role_membership" "all" {
 
 
 resource "sonatypeiq_organization_role_membership" "all" {
-  for_each        = { for obj in local.orgsroles : "${local.orgs[obj.org].id}_${data.sonatypeiq_role.roles[obj.role].id}_${obj.member}" => obj }
+  for_each        = { for obj in local.orgsroles : "${obj.org}_${data.sonatypeiq_role.roles[obj.role].id}_${obj.member}" => obj }
   organization_id = local.orgs[each.value.org].id
   role_id         = data.sonatypeiq_role.roles[each.value.role].id
   user_name       = each.value.member
@@ -164,7 +164,7 @@ resource "sonatypeiq_source_control" "app_web" {
   pull_request_commenting_enabled   = true
   source_control_evaluation_enabled = false
   scm_provider                      = "github"
-  repository_url                    = "https://github.com/sonatype-nexus-community/terraform-provider-sonatypeiq.git"
+  repository_url                    = "https://github.com/0xfed/terraform-provider-sonatypeiq.git"
 }
 
 resource "sonatypeiq_source_control" "org_Dev" {
@@ -178,6 +178,12 @@ resource "sonatypeiq_source_control" "org_Dev" {
   base_branch                       = "my-cool-branch"
 }
 
+
+resource "sonatypeiq_system_config" "iq_server" {
+  base_url       = "http://localhost:8070/"
+  force_base_url = false
+  
+}
 
 output "local_org" {
   value = local.orgs

@@ -35,10 +35,10 @@ It is worth noting that this is **NOT SUPPORTED** by Sonatype, and is a contribu
 Phew, that was easier than I thought. Last but not least of all - have fun!
 
 
-[shield_gh-workflow-test]: https://img.shields.io/github/actions/workflow/status/sonatype-nexus-community/terraform-provider-sonatypeiq/test.yml?branch=main&logo=GitHub&logoColor=white "build"
+[shield_gh-workflow-test]: https://img.shields.io/github/actions/workflow/status/0xfed/terraform-provider-sonatypeiq/test.yml?branch=main&logo=GitHub&logoColor=white "build"
 [shield_tfr-version]: https://img.shields.io/badge/Terraform%20Registry-8A2BE2
-[shield_license]: https://img.shields.io/github/license/sonatype-nexus-community/terraform-provider-sonatypeiq?logo=open%20source%20initiative&logoColor=white "license"
+[shield_license]: https://img.shields.io/github/license/0xfed/terraform-provider-sonatypeiq?logo=open%20source%20initiative&logoColor=white "license"
 
-[link_tfr]: https://registry.terraform.io/providers/sonatype-nexus-community/sonatypeiq/latest
-[link_gh-workflow-test]: https://github.com/sonatype-nexus-community/terraform-provider-sonatypeiq/actions/workflows/test.yml?query=branch%3Amain
-[license_file]: https://github.com/sonatype-nexus-community/terraform-provider-sonatypeiq/blob/main/LICENSE
+[link_tfr]: https://registry.terraform.io/providers/0xfed/sonatypeiq/latest
+[link_gh-workflow-test]: https://github.com/0xfed/terraform-provider-sonatypeiq/actions/workflows/test.yml?query=branch%3Amain
+[license_file]: https://github.com/0xfed/terraform-provider-sonatypeiq/blob/main/LICENSE

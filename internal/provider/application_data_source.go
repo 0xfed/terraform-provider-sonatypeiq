@@ -20,10 +20,10 @@ import (
 	"context"
 	"net/http"
 
+	sonatypeiq "github.com/0xfed/nexus-iq-api-client-go"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	sonatypeiq "github.com/sonatype-nexus-community/nexus-iq-api-client-go"
 )
 
 // Ensure the implementation satisfies the expected interfaces.

@@ -16,7 +16,7 @@
 
 package provider
 
-import sonatypeiq "github.com/sonatype-nexus-community/nexus-iq-api-client-go"
+import sonatypeiq "github.com/0xfed/nexus-iq-api-client-go"
 
 type SonatypeDataSourceData struct {
 	client *sonatypeiq.APIClient

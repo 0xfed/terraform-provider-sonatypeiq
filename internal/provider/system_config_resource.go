@@ -25,9 +25,10 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	sonatypeiq "github.com/sonatype-nexus-community/nexus-iq-api-client-go"
+	sonatypeiq "github.com/0xfed/nexus-iq-api-client-go"
 )
 
 // systemConfigResource is the resource implementation.
@@ -36,10 +37,11 @@ type systemConfigResource struct {
 }
 
 type systemConfigModelResource struct {
-	ID           types.String `tfsdk:"id"`
-	BaseURL      types.String `tfsdk:"base_url"`
-	ForceBaseURL types.Bool   `tfsdk:"force_base_url"`
-	LastUpdated  types.String `tfsdk:"last_updated"`
+	ID                                  types.String `tfsdk:"id"`
+	BaseURL                             types.String `tfsdk:"base_url"`
+	ForceBaseURL                        types.Bool   `tfsdk:"force_base_url"`
+	ADVANCED_REPORTING_INSIGHTS_ENABLED types.Bool   `tfsdk:"advanced_reporting_insights_enabled"`
+	LastUpdated                         types.String `tfsdk:"last_updated"`
 }
 
 // NewSystemConfigResource is a helper function to simplify the provider implementation.
@@ -67,6 +69,12 @@ func (r *systemConfigResource) Schema(_ context.Context, _ resource.SchemaReques
 			"force_base_url": schema.BoolAttribute{
 				Description: "Should the Base URL be forced?",
 				Required:    true,
+			},
+			"advanced_reporting_insights_enabled": schema.BoolAttribute{
+				Description: "Should the Advanced reporting insights be true?",
+				Default:     booldefault.StaticBool(true),
+				Computed:    true,
+				Optional:    true,
 			},
 			"last_updated": schema.StringAttribute{
 				Computed: true,
@@ -99,6 +107,9 @@ func (r *systemConfigResource) Create(ctx context.Context, req resource.CreateRe
 	}
 	if !plan.ForceBaseURL.IsNull() {
 		system_config.ForceBaseUrl = *sonatypeiq.NewNullableBool(plan.ForceBaseURL.ValueBoolPointer())
+	}
+	if !plan.ADVANCED_REPORTING_INSIGHTS_ENABLED.IsNull() {
+		system_config.ADVANCED_REPORTING_INSIGHTS_ENABLED = *sonatypeiq.NewNullableBool(plan.ADVANCED_REPORTING_INSIGHTS_ENABLED.ValueBoolPointer())
 	}
 	config_request = config_request.SystemConfig(system_config)
 	api_response, err := config_request.Execute()
@@ -144,7 +155,7 @@ func (r *systemConfigResource) Read(ctx context.Context, req resource.ReadReques
 	// Lookup System Configuration
 	config_request := r.client.ConfigAPI.GetConfiguration(ctx)
 	config_request = config_request.Property([]sonatypeiq.SystemConfigProperty{
-		"baseUrl", "forceBaseUrl",
+		"baseUrl", "forceBaseUrl", "ADVANCED_REPORTING_INSIGHTS_ENABLED",
 	})
 	system_config, api_response, err := config_request.Execute()
 
@@ -165,7 +176,9 @@ func (r *systemConfigResource) Read(ctx context.Context, req resource.ReadReques
 	if system_config.ForceBaseUrl.IsSet() {
 		state.ForceBaseURL = types.BoolValue(system_config.GetForceBaseUrl())
 	}
-
+	if system_config.ADVANCED_REPORTING_INSIGHTS_ENABLED.IsSet() {
+		state.ADVANCED_REPORTING_INSIGHTS_ENABLED = types.BoolValue(system_config.GetADVANCED_REPORTING_INSIGHTS_ENABLED())
+	}
 	// Set refreshed state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
@@ -197,6 +210,9 @@ func (r *systemConfigResource) Update(ctx context.Context, req resource.UpdateRe
 	}
 	if !plan.ForceBaseURL.IsNull() {
 		system_config.ForceBaseUrl = *sonatypeiq.NewNullableBool(plan.ForceBaseURL.ValueBoolPointer())
+	}
+	if !plan.ADVANCED_REPORTING_INSIGHTS_ENABLED.IsNull() {
+		system_config.ADVANCED_REPORTING_INSIGHTS_ENABLED = *sonatypeiq.NewNullableBool(plan.ADVANCED_REPORTING_INSIGHTS_ENABLED.ValueBoolPointer())
 	}
 	config_request = config_request.SystemConfig(system_config)
 	api_response, err := config_request.Execute()

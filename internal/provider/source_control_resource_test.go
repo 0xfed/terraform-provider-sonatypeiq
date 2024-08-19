@@ -35,7 +35,7 @@ func TestAccSourceControlApplicationResourceMinimumConfig(t *testing.T) {
 				Config: testAccSourceControlApplicationResourceMinimumConfig(rand),
 				Check: resource.ComposeTestCheckFunc(
 					resource.ComposeAggregateTestCheckFunc(
-						resource.TestCheckResourceAttr(resourceName, "repository_url", "https://github.com/sonatype-nexus-community/terraform-provider-sonatypeiq.git"),
+						resource.TestCheckResourceAttr(resourceName, "repository_url", "https://github.com/0xfed/terraform-provider-sonatypeiq.git"),
 						resource.TestCheckNoResourceAttr(resourceName, "remediation_pull_requests_enabled"),
 						resource.TestCheckNoResourceAttr(resourceName, "pull_request_commenting_enabled"),
 						resource.TestCheckNoResourceAttr(resourceName, "source_control_evaluation_enabled"),
@@ -165,7 +165,7 @@ resource "sonatypeiq_source_control" "test" {
   remediation_pull_requests_enabled = %s
   pull_request_commenting_enabled = %s
   source_control_evaluation_enabled = %s
-  repository_url = "https://github.com/sonatype-nexus-community/terraform-provider-sonatypeiq.git"
+  repository_url = "https://github.com/0xfed/terraform-provider-sonatypeiq.git"
 }`, rand, rand, enabled, enabled, enabled)
 }
 
@@ -185,7 +185,7 @@ resource "sonatypeiq_source_control" "test" {
   owner_type = "application"
   owner_id = sonatypeiq_application.app_by_public_id.id
   scm_provider = "github"
-  repository_url = "https://github.com/sonatype-nexus-community/terraform-provider-sonatypeiq.git"
+  repository_url = "https://github.com/0xfed/terraform-provider-sonatypeiq.git"
 }`, rand, rand)
 }
 

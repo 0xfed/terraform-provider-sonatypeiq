@@ -19,10 +19,10 @@ package provider
 import (
 	"context"
 
+	sonatypeiq "github.com/0xfed/nexus-iq-api-client-go"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	sonatypeiq "github.com/sonatype-nexus-community/nexus-iq-api-client-go"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -42,9 +42,10 @@ type systemConfigDataSource struct {
 }
 
 type systemConfigModel struct {
-	ID           types.String `tfsdk:"id"`
-	BaseURL      types.String `tfsdk:"base_url"`
-	ForceBaseURL types.Bool   `tfsdk:"force_base_url"`
+	ID                                  types.String `tfsdk:"id"`
+	BaseURL                             types.String `tfsdk:"base_url"`
+	ForceBaseURL                        types.Bool   `tfsdk:"force_base_url"`
+	ADVANCED_REPORTING_INSIGHTS_ENABLED types.Bool   `tfsdk:"advanced_reporting_insights_enabled"`
 }
 
 // Metadata returns the data source type name.
@@ -67,6 +68,11 @@ func (d *systemConfigDataSource) Schema(_ context.Context, req datasource.Schema
 			},
 			"force_base_url": schema.BoolAttribute{
 				Description: "Should the Base URL be forced?",
+				Computed:    true,
+				Optional:    true,
+			},
+			"advanced_reporting_insights_enabled": schema.BoolAttribute{
+				Description: "Should the Advanced reporting insights be true?",
 				Computed:    true,
 				Optional:    true,
 			},
@@ -93,7 +99,7 @@ func (d *systemConfigDataSource) Read(ctx context.Context, req datasource.ReadRe
 	// Lookup System Configuration
 	config_request := d.client.ConfigAPI.GetConfiguration(ctx)
 	config_request = config_request.Property([]sonatypeiq.SystemConfigProperty{
-		"baseUrl", "forceBaseUrl",
+		"baseUrl", "forceBaseUrl", "ADVANCED_REPORTING_INSIGHTS_ENABLED",
 	})
 	config, r, err := config_request.Execute()
 
@@ -114,6 +120,10 @@ func (d *systemConfigDataSource) Read(ctx context.Context, req datasource.ReadRe
 	}
 	if config.ForceBaseUrl.IsSet() {
 		data.ForceBaseURL = types.BoolValue(config.GetForceBaseUrl())
+	}
+
+	if config.ADVANCED_REPORTING_INSIGHTS_ENABLED.IsSet() {
+		data.ADVANCED_REPORTING_INSIGHTS_ENABLED = types.BoolValue(config.GetADVANCED_REPORTING_INSIGHTS_ENABLED())
 	}
 
 	data.ID = types.StringValue("placeholder")
