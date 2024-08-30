@@ -30,7 +30,7 @@ resource "sonatypeiq_organization" "${replace(config.name," ", "_")}" {
 }
 %{~ endfor ~}
 
-%{ for parent_organization_name in data_app_config}
+%{ for parent_organization_name in data_parent_app_config}
 data "sonatypeiq_organization" "${replace(parent_organization_name," ", "_")}" {
   name = "${parent_organization_name}"
   depends_on = [
@@ -38,11 +38,40 @@ data "sonatypeiq_organization" "${replace(parent_organization_name," ", "_")}" {
   ]
 }
 %{~ endfor ~}
+%{ for app in data_app_config}
+data "sonatypeiq_application" "${replace(app," ", "_")}" {
+  public_id = "${app}"
+  depends_on = [
+    sonatypeiq_application.${replace(app," ", "_")}
+  ]
+}
+%{~ endfor ~}
+
 
 %{ for config in apps_config }
 resource "sonatypeiq_application" "${replace(config.name, " ", "_")}" {
   name            = "${config.name}"
   public_id       = "${replace(chomp(config.name), " ", "-")}"
   organization_id = data.sonatypeiq_organization.${replace(config.organization_name," ", "_")}.id
+}
+%{~ endfor ~}
+
+%{ for role in data_roles }
+data "sonatypeiq_role" "${role}" {
+  name            = "${role}"
+}
+%{~ endfor ~}
+%{ for role in orgs_roles }
+resource "sonatypeiq_organization_role_membership" "${replace(role.org," ", "_")}_${role.role}_${role.member}" {
+  organization_id = data.sonatypeiq_organization.${replace(role.org," ", "_")}.id
+  role_id         = data.sonatypeiq_role.${role.role}.id
+  user_name       = "${role.member}"
+}
+%{~ endfor ~}
+%{ for role in apps_roles }
+resource "sonatypeiq_application_role_membership" "${replace(role.app," ", "_")}_${role.role}_${role.member}" {
+  application_id = data.sonatypeiq_application.${replace(role.app," ", "_")}.id
+  role_id         = data.sonatypeiq_role.${role.role}.id
+  user_name       = "${role.member}"
 }
 %{~ endfor ~}

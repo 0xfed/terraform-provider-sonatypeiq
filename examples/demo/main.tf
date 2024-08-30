@@ -52,7 +52,7 @@ locals {
     }
   }
 
-  data_app_config = distinct(
+  data_parent_app_config = distinct(
     setsubtract(
       [
         for app in local.apps :
@@ -61,17 +61,61 @@ locals {
       local.data_org_config
     )
   )
+
+  data_app_config = distinct(
+    setsubtract(
+      [
+        for app in local.apps :
+        app.name
+      ],
+      local.data_org_config
+    )
+  )
+
+
+  orgs_roles = distinct(flatten([
+    for org in local.orgs : [
+      for rbac in org.rbac : [
+        for member in rbac.members : {
+          org    = org.name
+          role   = rbac.role
+          member = member
+        }
+      ]
+    ]
+  ]))
+  apps_roles = distinct(flatten([
+    for app in local.apps : [
+      for rbac in app.rbac : [
+        for member in rbac.members : {
+          app    = app.name
+          role   = rbac.role
+          member = member
+        }
+      ]
+    ]
+  ]))
+
+  data_roles = distinct(
+    [for role in concat(local.apps_roles, local.orgs_roles) :
+      role.role
+    ]
+  )
 }
 
 
 # 
 resource "local_file" "generated" {
   content = templatefile("${path.module}/templates/main.tftpl", {
-    users_config : local.users_config,
-    orgs_config : local.orgs_config,
-    data_org_config : local.data_org_config,
-    apps_config : local.apps_config,
-    data_app_config : local.data_app_config,
+    users_config           = local.users_config,
+    orgs_config            = local.orgs_config,
+    data_org_config        = local.data_org_config,
+    apps_config            = local.apps_config,
+    data_parent_app_config = local.data_parent_app_config,
+    data_app_config        = local.data_app_config,
+    apps_roles             = local.apps_roles,
+    orgs_roles             = local.orgs_roles,
+    data_roles             = local.data_roles,
   })
   filename             = "./generated.tf"
   directory_permission = "0777"
