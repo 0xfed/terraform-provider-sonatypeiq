@@ -1,0 +1,19 @@
+- name: Web
+  rbac:
+    - members:
+        - test
+      role: Developer
+    - members:
+        - apiuser
+      role: Owner
+  parent: Test Zone
+- name: Blog
+  rbac:
+    - members:
+        - test
+        - apiuser
+      role: Developer
+    - members:
+        - test
+      role: Owner
+  parent: Test Zone

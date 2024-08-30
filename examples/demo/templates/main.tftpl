@@ -1,0 +1,48 @@
+%{ for config in users_config }
+resource "sonatypeiq_user" "${config.username}" {
+  username   = "${config.username}"
+  password   = "${config.password}"
+  first_name = "${config.first_name}"
+  last_name  = "${config.last_name}"
+  email      = "${config.email}"
+}
+%{~ endfor ~}
+
+%{ for parent_organization_name in data_org_config}
+%{ if parent_organization_name != "Root Organization"}
+data "sonatypeiq_organization" "${replace(parent_organization_name," ", "_")}" {
+  name = "${parent_organization_name}"
+  depends_on = [
+    sonatypeiq_organization.${replace(parent_organization_name," ", "_")}
+  ]
+}
+%{else}
+data "sonatypeiq_organization" "${replace(parent_organization_name," ", "_")}" {
+  id = "ROOT_ORGANIZATION_ID"
+}
+%{~ endif ~}
+%{~ endfor ~}
+
+%{ for config in orgs_config }
+resource "sonatypeiq_organization" "${replace(config.name," ", "_")}" {
+  name   = "${config.name}"
+  parent_organization_id = data.sonatypeiq_organization.${replace(config.parent_organization_name," ", "_")}.id
+}
+%{~ endfor ~}
+
+%{ for parent_organization_name in data_app_config}
+data "sonatypeiq_organization" "${replace(parent_organization_name," ", "_")}" {
+  name = "${parent_organization_name}"
+  depends_on = [
+    sonatypeiq_organization.${replace(parent_organization_name," ", "_")}
+  ]
+}
+%{~ endfor ~}
+
+%{ for config in apps_config }
+resource "sonatypeiq_application" "${replace(config.name, " ", "_")}" {
+  name            = "${config.name}"
+  public_id       = "${replace(chomp(config.name), " ", "-")}"
+  organization_id = data.sonatypeiq_organization.${replace(config.organization_name," ", "_")}.id
+}
+%{~ endfor ~}

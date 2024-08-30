@@ -3,7 +3,7 @@ module terraform-provider-sonatypeiq
 go 1.21
 
 require (
-	github.com/0xfed/nexus-iq-api-client-go v0.180.0
+	github.com/0xfed/nexus-iq-api-client-go v0.181.0
 	github.com/hashicorp/terraform-plugin-docs v0.19.4
 	github.com/hashicorp/terraform-plugin-framework v1.4.2
 	github.com/hashicorp/terraform-plugin-framework-validators v0.12.0

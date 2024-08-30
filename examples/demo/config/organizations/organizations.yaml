@@ -1,0 +1,21 @@
+- name: Test Zone
+  rbac: []
+  sourcecontrol:
+    provider: github
+    repository: ''
+  parent: Another Sanbox
+- name: Dev
+  rbac:
+    - members:
+        - test
+      role: Owner
+  # parent: Root Organization
+- name: Another Sanbox
+  rbac:
+    - members:
+        - test
+      role: Developer
+    - members:
+        - apiuser
+      role: Owner
+  # parent: Root Organization
