@@ -125,3 +125,10 @@ resource "local_file" "generated" {
     ignore_changes = [directory_permission, file_permission, filename]
   }
 }
+
+
+resource "sonatypeiq_system_config" "iq_server" {
+  base_url                            = "http://localhost:8070/"
+  force_base_url                      = false
+  advanced_reporting_insights_enabled = false
+}

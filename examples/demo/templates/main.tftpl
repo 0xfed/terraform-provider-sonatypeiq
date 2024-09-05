@@ -61,6 +61,8 @@ data "sonatypeiq_role" "${role}" {
   name            = "${role}"
 }
 %{~ endfor ~}
+
+# create organization-role relationship.
 %{ for role in orgs_roles }
 resource "sonatypeiq_organization_role_membership" "${replace(role.org," ", "_")}_${role.role}_${role.member}" {
   organization_id = data.sonatypeiq_organization.${replace(role.org," ", "_")}.id
@@ -68,6 +70,8 @@ resource "sonatypeiq_organization_role_membership" "${replace(role.org," ", "_")
   user_name       = "${role.member}"
 }
 %{~ endfor ~}
+
+# create application-role relationship.
 %{ for role in apps_roles }
 resource "sonatypeiq_application_role_membership" "${replace(role.app," ", "_")}_${role.role}_${role.member}" {
   application_id = data.sonatypeiq_application.${replace(role.app," ", "_")}.id
