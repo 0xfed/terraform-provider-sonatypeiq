@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     sonatypeiq = {
-      source = "sonatypeiq"
+      source  = "sonatype-nexus-community/sonatypeiq"
     }
   }
 }
