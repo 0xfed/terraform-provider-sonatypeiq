@@ -132,3 +132,13 @@ resource "sonatypeiq_system_config" "iq_server" {
   force_base_url                      = false
   advanced_reporting_insights_enabled = false
 }
+
+
+
+
+resource "sonatypeiq_legacy_violation" "iq_server" {
+  owner_id                    = "sandbox-application"
+  owner_type                  = "application"
+  enabled = "null"
+  allow_override = "false"
+}

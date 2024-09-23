@@ -23,3 +23,5 @@ testacc:
 
 build:
 	go build -o terraform-provider-sonatypeiq
+rebuild: 
+	go build -a -o terraform-provider-sonatypeiq

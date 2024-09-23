@@ -185,6 +185,7 @@ func (p *SonatypeIqProvider) Resources(ctx context.Context) []func() resource.Re
 		NewApplicationRoleMembershipResource,
 		NewOrganizationRoleMembershipResource,
 		NewSourceControlResource,
+		NewLegacyViolationResource,
 	}
 }
 
